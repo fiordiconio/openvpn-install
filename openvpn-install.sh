@@ -738,13 +738,21 @@ verb 3" >>/etc/openvpn/server.conf
 	sed -i 's|%i.conf|/etc/openvpn/server.conf|' /etc/systemd/system/openvpn.service
 	sed -i 's|%t|/run|' /etc/systemd/system/openvpn.service
 
-	systemctl daemon-reload
-	systemctl enable openvpn-server@server
-	systemctl restart openvpn-server@server
 	if [[ ! -d /run/openvpn-server ]]; then
 		mkdir /run/openvpn-server
 	fi
 
+	if [[ -d /var/log/openvpn ]]; then
+		chown openvpn:openvpn /var/log/openvpn
+	fi
+
+	if [[ -d /etc/openvpn/ ]]; then
+		chmod +r *
+	fi
+
+	systemctl daemon-reload
+	systemctl enable openvpn-server@server
+	systemctl restart openvpn-server@server
 	if [[ $DNS == 2 ]]; then
 		installUnbound
 	fi
